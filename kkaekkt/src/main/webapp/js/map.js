@@ -529,7 +529,7 @@ $(document).ready(function() {
        })      
       
    }
-   
+   //just Test
    function findReviewGrade(bno)  {
 	 //업체 업무시간 정보
 	      $.ajax({
