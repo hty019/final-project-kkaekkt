@@ -5,6 +5,9 @@ window.onload=function() {
 };
 function initHeaderEvent() {
     initChatEvent();
+    initAlertEvent();
+}
+function initAlertEvent(){
     const $noticeBox = document.querySelector("#noticeBox");
     const $noticeUl = $noticeBox.querySelector('ul');
     const $bell=document.querySelector('.fa-bell');
@@ -94,65 +97,78 @@ function sendAlarm() {//알림 보내는 공용 메서드
     });
 }
 function initChatEvent(){
-    $('.fa-comments').click(function() { //채팅 아이콘 클릭
-        $('#chatCont').toggle();
-        $('#noticeBox').hide();//알림창은 숨긴다
+    const $chatIcon = document.querySelector(".fa-comments");
+    const $headerChatCont = document.querySelector("#chatCont");
+    const $noticeBox = document.querySelector("#noticeBox");
+    const $chatWrapper = document.querySelector(".chatContainer");
+    const $headerChatFooter = document.querySelector(".chatfooter");
+    $chatIcon.addEventListener("click",function() { //채팅 아이콘 클릭
+        if($headerChatCont.style.display=="block"){
+            $headerChatCont.style.display="none";
+        }else{
+            $headerChatCont.style.display="block";
+        }
+        $noticeBox.style.display="none";
     });
-    $('.chatContainer').on('click','.closeChatBtn',function() { //메인 채팅방 닫기 버튼
-        var array=$(this).attr('id') //버튼의 id에서 
-                         .split('clsBtn'); //좌측의 게스트번호와 우측의 방번호를 가져온다.
-        $('#'+array[0]+'room'+array[1]).remove();//추출한 정보로 채팅방 id를 만들어 지워준다.                         
-    });
-    $('.chatContainer').on('click','.chatWriteBtn',function(){ //채팅방에 채팅로그추가버튼
-        var content=$(this).siblings()[0].value;//버튼 옆에 textArea에서 사용자가 입력한 텍스트를 입력
-        if(content!=''){//입력문자가 공백이 아닐 때에만 채팅 로그를 등록
-            var array=$(this).attr('id') //버튼의 id에서 
-                             .split('sendBtn');//좌측의 게스트번호와 우측의 방번호를 가져온다.
-            chatObj.content=content;
-            chatObj.addressee=Number(array[0]);
-            chatObj.roomnum=Number(array[1]);
+    $chatWrapper.addEventListener("click",function({target}){ //메인 콘테이너의 채팅방 출력되는 영역
+        if(target.classList.contains("closeChatBtn")){//채팅방 닫기 버튼을 클릭했다면,
+            const array = target.id.split('clsBtn');
+            const $chatRoom = $chatWrapper.querySelector('#'+array[0]+'room'+array[1]);
+            $chatRoom.remove();
+        }else if(target.classList.contains("chatWriteBtn")){//채팅 입력 버튼을 클릭했다면 
+            const chatRog = target.previousElementSibling.value;
+            if(chatRog!=''){//입력문자가 공백이 아니라면,
+                const array=target.id.split("sendBtn");
+                chatObj.content=chatRog;
+                chatObj.addressee=Number(array[0]);
+                chatObj.roomnum=Number(array[1]);
 
-            $(this).siblings()[0].value='';//입력칸 초기화
-            var chat={
-                roomnum:chatObj.roomnum,
-                sender:chatObj.sender,
-                content:content,
-                stime:dateTime(),
-                state:0
+                const chat={
+                    roomnum:chatObj.roomnum,
+                    sender:chatObj.sender,
+                    content:chatRog,
+                    stime:dateTime(),
+                    state:0
+                }
+                sendChat(chat);
+                appendChat(chat);
+                target.previousElementSibling.focus();
+                target.previousElementSibling.value=''; //입력칸 초기화
             }
-            sendChat(chat);//채팅 보내기 메서드
-            appendChat(chat);//채팅로그를 채팅방에 올리기 메서드
-            $(this).siblings().focus();//채팅인풋에 포커스 주기
         }
     });
-    $('.chatfooter').on('click','.chatExitBtn',function(event){
-        event.stopPropagation();//버블링 막기
-        chatObj.closer=chatObj.sender;//본인 번호를 나간(갈)사람으로 입력한다.
-        chatObj.roomnum=Number($(this).attr('id') //버튼의 id에서
-                                      .substr(11));//방번호만 추출한다.
-        chatRoomExit();//채팅방 나가기 메서드
-    });
-    $('.chatfooter').on('click','.chatList',function(){//헤더에 채팅방 리스트 누르면 채팅방 띄우기
-        var array=$(this).attr('id').split('roomLi');//0=수신자mno, 1=방번호
-        var addressee=Number(array[0]);
-        var roomnum=Number(array[1]);
-        if($('#'+addressee+'room'+roomnum)[0]==undefined){//연결된 채팅방이 없을 때만 만들기
-            if($('.chatBox')[2]!=undefined){//만약 열려있는 채팅방이 이미 3개 라면
-                $('.chatBox')[0].remove();//제일 처음 생성된 채팅방을 지운다.
+    $chatWrapper.addEventListener("keydown",function(evt){
+        if(evt.target.classList.contains("chatText")){//textArea 에서
+            if(evt.keyCode==13){ //엔터키가 눌렸는데
+                if(evt.target.value!=''){ //공백이 아니라면
+                    evt.target.nextElementSibling.click();//입력버튼 누르기
+                }
             }
-            var guest=$('#guest'+addressee).text();
-            chatObj.roomnum=roomnum;
-            chatObj.closer=chatObj.sender;
-            var room={addressee:addressee,roomnum:roomnum,guest:guest}
-            printRoom(room);//채팅방 만들기
-            getChatRog();//채팅로그 넣기
         }
     });
-    $('.chatContainer').on('keydown','.chatText',function(key){
-        if(key.keyCode == 13) {
-            if($(this)[0].value!=""){
-                $(this).siblings() //채팅입력박스 우측에 입력 버튼 지정
-                       .trigger('click'); //클릭 이벤트 활성화
+    $headerChatFooter.addEventListener("click",function(evt){
+        const target=evt.target;
+        if(target.classList.contains("chatExitBtn")){//만약, 채팅방 나가기 버튼을 눌렀다면,
+           evt.preventDefault();//버블링 막기
+           chatObj.closer=chatObj.sender;//본인 번호를 나간(갈)사람으로 입력한다.
+           chatObj.roomnum=Number(target.id.substr(11));//방번호만 추출한다.
+           chatRoomExit();//채팅방 나가기 메서드
+        }else if(target.classList.contains("chatList")){//헤더에 채팅방 리스트를 눌렀을 때
+            const array=target.id.split("roomLi");
+            const addressee=Number(array[0]);
+            const roomnum=Number(array[1]);
+            const $chatRoom=document.querySelector('#'+addressee+'room'+roomnum);
+            if($chatRoom==undefined){//연결된 채팅방이 없을 때
+                const $chatRoomLi = $chatWrapper.getElementsByClassName('chatBox');
+                if($chatRoomLi.length==2){//열려있는 채팅방의 개수가 이미 3개라면
+                    $chatRoomLi[0].remove();//제일 처음 생성된 채팅방을 지운다.
+                }
+                const guest = document.querySelector("#guest"+addressee).innerText;
+                chatObj.roomnum=roomnum;
+                chatObj.closer=chatObj.sender;
+                const room={addressee:addressee,roomnum:roomnum,guest:guest}
+                printRoom(room);//채팅방 만들기
+                getChatRog();//채팅로그 넣기
             }
         }
     });
