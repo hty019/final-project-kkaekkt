@@ -5,36 +5,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script>
-        function ft(source){
-            return source.innerText=='1';
+    <style>
+        .see{
+            display:block;
         }
+    </style>
+    <script>
         window.onload=function(){
-            const li = document.getElementsByTagName("li");
-            const liList = Array.prototype.slice.call(li);
-            [].forEach.call(li,function(e){
-                e.addEventListener("click",(event)=>{
-                    event.target.style.color="red";
-                    
-                    const list=liList.filter(ft);
-                    console.log(list);
-                });
+            const ul=document.querySelector("ul");
+            ul.addEventListener("click",function({target}){
+                console.log(target.tagName=="LI");
             });
-        }        
+        };
     </script>
 </head>
 <body>
     <ul>
-        <li>1</li>
-        <li>2</li>
-        <li>3</li>
-        <li>4</li>
-        <li>5</li>
-        <li>6</li>
-        <li>7</li>
-        <li>8</li>
-        <li>9</li>
-        <li>0</li>
+        <li id=1 class="see">가</li>
+        <li id=2 class="see">나</li>
+        <li id=3 class="see">다</li>
+        <li id=4 class="see">라</li>
+        <li id=5 class="see">마</li>
     </ul>
 </body>
 </html>

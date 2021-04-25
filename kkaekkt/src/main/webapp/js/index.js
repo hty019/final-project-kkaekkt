@@ -1,11 +1,11 @@
 //전역변수 선언-모든 홈페이지에서 사용 할 수 있게 index에 저장
 var socket = null;
 
-$(document).ready(function () {
+window.onload=function () {
   connectWs();
   fadeIn();
   initIndexEvent();
-});
+};
 function connectWs() {
   socket = new WebSocket("ws://localhost:8080/echo.do");
   // socket = new WebSocket("ws://54.180.33.3:8080/echo.do");
@@ -82,30 +82,32 @@ function connectWs() {
   };
 }
 function fadeIn() {
-  const fadeH1 = document.getElementsByTagName("h1");
-  const h1List = Array.prototype.slice.call(fadeH1);
-  // fadeH1.addClass("animate__animated animate__fadeInUp");
-  // $(".search_tab").addClass("animate__animated animate__fadeInUp");
-  // $(".search_box").addClass("animate__animated animate__fadeInUp");
+  const $fadeH1 = document.getElementsByTagName("h1");
+  const $search_tab = document.getElementsByClassName("search_tab");
+  const $search_box = document.getElementsByClassName("search_box");
+  addClass($fadeH1,$search_tab,$search_box);
 }
-
-// $(".btn1").click(function () {
-//   $(this).toggleClass("btn_selected");
-//   $(".btn2").removeClass("btn_selected");
-// });
-// $(".btn2").click(function () {
-//   $(this).toggleClass("btn_selected");
-//   $(".btn1").removeClass("btn_selected");
-// })
+function addClass() {
+  for(let i=0;i<arguments.length;i++){
+    let list = Array.from(arguments[i]);
+    list.forEach(function(item){
+      item.classList.add("animate__animated");
+      item.classList.add("animate__fadeInUp");
+    });
+  }
+}
 function initIndexEvent(){
-  const search_tabBtn=document.querySelectorAll('.search_tab button');
-  
-  [].forEach.call(search_tabBtn,function(e) {
-    e.addEventListener("click",(event)=>{ //람다식 사용
-      event.target.classList.add('btn_selected');
-      //정리하면, 리턴은 Static Collection 이며, 배열 함수를 적용할 수 없으므로,
-      //filter 메서드도 적용할 수 없다. 
-      event.target.previousElementSibling.classList.remove('btn_selected');
+  const $search_tabBtn=document.querySelectorAll('.search_tab button');
+
+  const tabBtnList = Array.from($search_tabBtn);
+  tabBtnList.forEach(function(tab){
+    tab.addEventListener("click",(event)=>{
+      let value=event.target.value;
+      let unSelected=tabBtnList.filter(tab => tab.value!=value);
+      unSelected.forEach(function(btn){
+        btn.classList.remove("btn_selected");
+      });
+      event.target.classList.add("btn_selected");
     });
   });
 }
@@ -130,7 +132,6 @@ function showMap() {
 		location.href = mapUrl+'?type=2&search='+inputText;
 		break;
 	}
-
 }
 function readSet(span){
   for(let i=0;i<span.length;i++){

@@ -1,22 +1,34 @@
-$(document).ready(function() {
+window.onload=function() {
     initHeaderEvent();
     headerAlertAjax();
     headerRoomLiAjax();
-});
+};
 function initHeaderEvent() {
     initChatEvent();
-    $('#noticeBox ul').on('click','.msgBody',function() {//알림 리스트의 제목 클릭 시
-        alertObj.ano=Number($(this).attr('id').substr(3));
-        var header=$(this).siblings()[0].innerHTML;
-        readAlert(header);
+    const $noticeBox = document.querySelector("#noticeBox");
+    const $noticeUl = $noticeBox.querySelector('ul');
+    const $bell=document.querySelector('.fa-bell');
+    const $chatCont = document.querySelector("#chatCont");
+    $noticeUl.addEventListener("click",function({target}){
+        if(target.classList.contains("msgBody")){//만약 선택된 요소가 msgBody 클래스를 갖고있다면
+            alertObj.ano=target.id.substr(3);
+            let header=target.previousElementSibling.innerText;
+            readAlert(header);
+        }
     });
-    $('.fa-bell').click(function() {//종을 누를 경우 알림 리스트 출력/숨기기
-        $('#noticeBox').toggle();
-        $('#chatCont').hide();//채팅 박스는 숨긴다
+    $bell.addEventListener("click",function(){
+        if($noticeBox.style.display=="block"){
+            $noticeBox.style.display="none";
+        }else{
+            $noticeBox.style.display="block";
+        }
+        $chatCont.style.display="none";
     });
-    $('#noticeBox').on('click','i',function() {//알림 리스트의 삭제버튼 클릭 시
-        alertObj.ano=Number($(this).attr('id').substr(8));
-        delHeaderAlert();
+    $noticeBox.addEventListener("click",function({target}){
+        if(target.tagName=="I"){
+            alertObj.ano=Number(target.id.substr(8));
+            delHeaderAlert();
+        }
     });
 }
 function myAlarm(){
