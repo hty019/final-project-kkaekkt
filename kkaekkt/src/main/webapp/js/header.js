@@ -1,8 +1,9 @@
-window.onload=function() {
+window.addEventListener("load",function() {
+    console.log('무야호');
     initHeaderEvent();
     headerAlertAjax();
     headerRoomLiAjax();
-};
+});
 function initHeaderEvent() {
     initChatEvent();
     initAlertEvent();
@@ -113,7 +114,7 @@ function initChatEvent(){
     $chatWrapper.addEventListener("click",function({target}){ //메인 콘테이너의 채팅방 출력되는 영역
         if(target.classList.contains("closeChatBtn")){//채팅방 닫기 버튼을 클릭했다면,
             const array = target.id.split('clsBtn');
-            const $chatRoom = $chatWrapper.querySelector('#'+array[0]+'room'+array[1]);
+            const $chatRoom = document.getElementsById(array[0]+'room'+array[1]);
             $chatRoom.remove();
         }else if(target.classList.contains("chatWriteBtn")){//채팅 입력 버튼을 클릭했다면 
             const chatRog = target.previousElementSibling.value;
@@ -147,23 +148,24 @@ function initChatEvent(){
         }
     });
     $headerChatFooter.addEventListener("click",function(evt){
-        const target=evt.target;
-        if(target.classList.contains("chatExitBtn")){//만약, 채팅방 나가기 버튼을 눌렀다면,
-           evt.preventDefault();//버블링 막기
-           chatObj.closer=chatObj.sender;//본인 번호를 나간(갈)사람으로 입력한다.
-           chatObj.roomnum=Number(target.id.substr(11));//방번호만 추출한다.
-           chatRoomExit();//채팅방 나가기 메서드
-        }else if(target.classList.contains("chatList")){//헤더에 채팅방 리스트를 눌렀을 때
-            const array=target.id.split("roomLi");
+        const bubble=Array.from(evt.path);
+        const chatLi=bubble.filter(element=>element.className=="chatList");
+        if(evt.target.classList.contains("chatExitBtn")){//만약, 채팅방 나가기 버튼을 눌렀다면,
+            evt.preventDefault();//버블링 막기
+            chatObj.closer=chatObj.sender;//본인 번호를 나간(갈)사람으로 입력한다.
+            chatObj.roomnum=Number(evt.target.id.substr(11));//방번호만 추출한다.
+            chatRoomExit();//채팅방 나가기 메서드
+        }else if(chatLi.length>0){//헤더에 채팅방 리스트를 눌렀을 때
+            const array=chatLi[0].id.split("roomLi");
             const addressee=Number(array[0]);
             const roomnum=Number(array[1]);
-            const $chatRoom=document.querySelector('#'+addressee+'room'+roomnum);
+            const $chatRoom=document.getElementById(addressee+'room'+roomnum);
             if($chatRoom==undefined){//연결된 채팅방이 없을 때
-                const $chatRoomLi = $chatWrapper.getElementsByClassName('chatBox');
-                if($chatRoomLi.length==2){//열려있는 채팅방의 개수가 이미 3개라면
+                const $chatRoomLi = document.getElementsByClassName('chatBox');
+                if($chatRoomLi.length==3){//열려있는 채팅방의 개수가 이미 3개라면
                     $chatRoomLi[0].remove();//제일 처음 생성된 채팅방을 지운다.
                 }
-                const guest = document.querySelector("#guest"+addressee).innerText;
+                const guest = document.getElementById("guest"+addressee).innerText;
                 chatObj.roomnum=roomnum;
                 chatObj.closer=chatObj.sender;
                 const room={addressee:addressee,roomnum:roomnum,guest:guest}
@@ -174,8 +176,9 @@ function initChatEvent(){
     });
 }
 function rlDotToZero(roomnum){//읽을 때 해당 채팅방의 안읽은 개수 초기화
-    $('#rlDot'+roomnum).hide();
-    $('#rlDot'+roomnum)[0].innerHTML=0;
+    const rlDot = document.getElementById("rlDot"+roomnum);
+    rlDot.style.display='none';
+    rlDot.innerText=0;
     initChatDot();//전체 채팅 안읽은 개수 초기화
 }
 function initLastChat(roomnum,content){//준비물:객체.roomnum, 객체.content
@@ -411,17 +414,18 @@ function printRoomLi(room){
     initChatDot();//전체 안읽은 개수 초기화
 }
 function initChatDot(){
-    var list=$('.rlDot');
-    var count=0;
-    for(var i=0;i<list.length;i++){
-        count+=Number(list[i].innerHTML);
+    const $list = document.getElementsByClassName('rlDot');
+    const $chatDot = document.getElementsByClassName('chatDot')[0];
+    let count=0;
+    for(let i=0;i<$list.length;i++){
+        count+=Number($list[i].innerText);
     }
     if(count==0){
-        $('.chatDot').hide();
-        $('.chatDot')[0].innerHTML=count;
+        $chatDot.style.display='none';
+        $chatDot.innerText=count;
     }else{
-        $('.chatDot')[0].innerHTML=count;
-        $('.chatDot').show();
+        $chatDot.innerText=count;
+        $chatDot.style.display='block';
     }
 }
 function headerRoomLiAjax() {
@@ -464,27 +468,62 @@ function headerAlertAjax() {
     });
 }
 function printHeaderList(list) {//헤더에 알림 리스트 출력
-    var read;
-    var count=list.length;
-    $.each(list, function(key,value) {
+    let read;
+    let count=list.length;
+    const $noticeUl=document.querySelector('#noticeBox ul');
+    let alertLi;
+    let msgTopDiv;
+    let msgHeaderSpan;
+    let msgBodySpan;
+    let msgBottomDiv;
+    let dateSpan;
+    let byBsSpan;
+    let alertDel;
+    for(let value of list) {
         if(value.state==2){
             read=' read';
             count--;
         }else {
             read='';
         }
-        $('#noticeBox ul').append('<li class="alertLi'+value.ano+read+'">'+
-                                    '<div class="msgTop'+read+'">'+
-                                        '<span class="msgHeader">'+value.typename+'</span>⠀<span id="msg'+value.ano+'" class="msgBody">'+value.msg+'</span>'+
-                                    '</div>'+
-                                    '<div class="msgBottom'+read+'">'+
-                                        '<span class="date">'+value.date+'</span>'+
-                                        '<span class="byBs">by '+value.senderName+'</span>'+
-                                    '</div>'+
-                                    '<i id="alertDel'+value.ano+'" class="fas fa-times"></i>'+
-                                '</li>'
-        );
-    });
+        //생성
+        alertLi=document.createElement("li");
+        msgTopDiv=document.createElement("div");
+        msgHeaderSpan=document.createElement("span");
+        msgBodySpan=document.createElement("span");
+        msgBottomDiv=document.createElement("div");
+        dateSpan=document.createElement("span");
+        byBsSpan=document.createElement("span");
+        alertDel=document.createElement("i");
+        
+        //세팅
+        msgHeaderSpan.className="msgHeader";
+        msgBodySpan.className="msgBody";
+        dateSpan.className="date";
+        byBsSpan.className="byBs";
+        alertLi.className='alertLi'+value.ano+read;
+        msgTopDiv.className="msgTop"+read;
+        msgBottomDiv.className='msgBottom'+read;
+        alertDel.className="fas fa-times";
+
+        msgBodySpan.id="msg"+value.ano;
+        alertDel.id="alertDel"+value.ano;
+        
+        msgHeaderSpan.appendChild(document.createTextNode(value.typename));
+        msgBodySpan.appendChild(document.createTextNode(value.msg));
+        dateSpan.appendChild(document.createTextNode(value.date));
+        byBsSpan.appendChild(document.createTextNode("by "+value.senderName));
+        
+        //조립
+        msgTopDiv.appendChild(msgHeaderSpan);
+        msgTopDiv.appendChild(msgBodySpan);
+        msgBottomDiv.appendChild(dateSpan);
+        msgBottomDiv.appendChild(byBsSpan);
+        alertLi.appendChild(msgTopDiv);
+        alertLi.appendChild(msgBottomDiv);
+        alertLi.appendChild(alertDel);
+        $noticeUl.append(alertLi);
+    };
     printAlertDot(count);
 }
 function initAlertObj() {//객체 초기화 공용 메서드
@@ -493,24 +532,28 @@ function initAlertObj() {//객체 초기화 공용 메서드
     delete alertObj.ano;
 }
 function printAlertDot(count){//알림 출력 메서드
-        $('#bellBox .alertDot').text(count);
+    const $alertDot = document.getElementsByClassName("alertDot")[0];
+        $alertDot.innerText=count;
     if(count!=0){
-        $('#bellBox .alertDot').show();
+        $alertDot.style.display="block";
     }
 }
 function downAlertDotCount(){//알림 카운트 내리기 메서드
-    var count=Number($('#bellBox .alertDot')[0].innerHTML)-1;
+    const $alertDot = document.getElementsByClassName("alertDot")[0];
+    const count=Number($alertDot.innerText)-1;
     if(count==0){
-        $('#bellBox .alertDot').hide();
+        $alertDot.style.display='none';
     }
-    $('#bellBox .alertDot').text(count);
+    $alertDot.innerText=count;
 }
 function upAlertDotCount(){//알림 카운트 올리기 메서드
-    var count=Number($('#bellBox .alertDot')[0].innerHTML)+1;
-    $('#bellBox .alertDot').text(count);
-    $('#bellBox .alertDot').show();
+    const $alertDot = document.getElementsByClassName("alertDot")[0];
+    const count=Number($alertDot.innerText)+1;
+    $alertDot.innerText=count;
+    $alertDot.style.display='block';
 }
 function alertDotCountZero(){
-    $('#bellBox .alertDot').hide();//먼저 숨긴다.
-    $('#bellBox .alertDot').text(0);//숫자를 0으로 돌린다.
+    const $alertDot = document.getElementsByClassName("alertDot")[0];
+    $alertDot.style.display='none';//먼저 숨긴다.
+    $alertDot.innerText=0;//숫자를 0으로 돌린다.
 }
