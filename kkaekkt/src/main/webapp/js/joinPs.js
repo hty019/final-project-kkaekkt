@@ -16,6 +16,7 @@ const id = document.getElementById("id");
 const pw = document.getElementById("pw");
 const repw = document.getElementById("repw");
 const name = document.getElementById("name");
+const birth = document.getElementById("birth");
 const phone = document.getElementById("phone");
 const address = document.getElementById("address");
 const email = document.getElementById("email");
@@ -211,7 +212,8 @@ function initKeyEvent() {
   });
 //생년월일 입력형식 확인
   birth.addEventListener("keyup", () => {
-    let formatbirth = 0;
+    // let formatbirth = 0;
+    formatbirth = 0;
     //20210101
     if (!regBth.test(birth.value)) {
       if (birth.value.length == 0) {
@@ -227,8 +229,10 @@ function initKeyEvent() {
     }
   });
 //전화번호 입력형식 확인
-  birth.addEventListener("keyup", () => {
-    let formatph = 0;
+  //birth.addEventListener("keyup", () => {
+  phone.addEventListener("keyup", () => {
+    // let formatph = 0;
+    formatph = 0;
     // if (!regPh.test(phone.value)) {
     if (!regPh.test(phone.value)) {
       if (phone.value.length == 0) {
