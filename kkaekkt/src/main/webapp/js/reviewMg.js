@@ -133,6 +133,9 @@ function delAjax() {
       ajax(); //리스트 재출력
       alert("답글이 삭제되었습니다.");
     },
+    fail: function(){
+      alert("요청이 정상적으로 처리되지 않았습니다.");
+    }
   });
 }
 function initSide() {

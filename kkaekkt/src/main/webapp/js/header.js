@@ -62,8 +62,8 @@ function dateTime(){
     return dateTime;
 }
 function sendAlarm() {//알림 보내는 공용 메서드
-    var msgType='0';//메시지 타입은 알람
-    var alertType; //알람의 타입
+    let msgType='0';//메시지 타입은 알람
+    let alertType; //알람의 타입
     switch(alertObj.typenum) {
         case 1:alertType='[주문]';
         break;
@@ -80,11 +80,13 @@ function sendAlarm() {//알림 보내는 공용 메서드
         url:'/regitAlert.do',
         data:alertObj,
         success:function(ano) {
-            if(socket){
-                var receiver=alertObj.addressee;
-                var msg='<li class="alertLi'+ano+'">'+
+            if(socket){//이 부분 JS로 처리하려면 지금 들어가는 데이터 포맷을 정리해서 보내는 쪽과 받는 쪽의 데이터 처리가 다시 확립되어야함 
+                       //집중해서 설계해야하는 작업이므로 일단 킵
+                let receiver=alertObj.addressee;
+                let msg='<li class="alertLi'+ano+'">'+
                             '<div class="msgTop">'+
-                                '<span class="msgHeader">'+alertType+'</span>⠀<span class="msgBody" id="msg'+ano+'">'+alertObj.msg+'</span>'+
+                                '<span class="msgHeader">'+alertType+'</span>⠀<span class="msgBody" id="msg'+ano+'">'+
+                                alertObj.msg+'</span>'+
                             '</div>'+
                             '<div>'+
                                 '<span class="alertDate">'+today()+'</span>'+
@@ -182,41 +184,41 @@ function rlDotToZero(roomnum){//읽을 때 해당 채팅방의 안읽은 개수 
     initChatDot();//전체 채팅 안읽은 개수 초기화
 }
 function initLastChat(roomnum,content){//준비물:객체.roomnum, 객체.content
-    $('#lastChat'+roomnum)[0].innerHTML=content;
+    document.getElementsById('lastChat'+roomnum).innerText=content;
 }
 function getChatRog(){
     $.get({
         url:'/getChatRog.do',
         data:chatObj,
         success:function(result){//반환객체:List<ChatVO>
-            var list=JSON.parse(result);
+            let list=JSON.parse(result);
             appendChat(list);
             initChatObj();
         }
-    })
+    });
 }
 function chatRoomExit(){
     $.get({
         url:'/exitChatRoom.do',
         data:chatObj,
         success:function(){
-            $('.chatBox[id$=room'+chatObj.roomnum+']').remove();//방번호로 끝나는 메인채팅방 삭제
-            $('.chatList[id$=roomLi'+chatObj.roomnum+']').remove();//방번호로 끝나는 헤더 채팅방 삭제
+            document.querySelector('.chatBox[id$=room'+chatObj.roomnum+']').remove();//방번호로 끝나는 메인채팅방 삭제
+            document.querySelector('.chatList[id$=roomLi'+chatObj.roomnum+']').remove();//방번호로 끝나는 헤더 채팅방 삭제
             initChatObj();
-            initChatDot();         
+            initChatDot();
         }
     });
 }
 function sendChat(chat){
-    var msgType='1';//메시지 타입 0=알림, 1=채팅
-    var receiver=chatObj.addressee;
+    let msgType='1';//메시지 타입 0=알림, 1=채팅
+    let receiver=chatObj.addressee;
     $.get({
         url:'/sendChat.do',
         data:chatObj,
         success:function(result){//정상적으로 메서드가 완료됐다면,
             if(result=="success"){
                 if(socket){
-                    var msg=chatObj.sender+//메시지의 포맷 = 발신자 번호,name:발신인,roomnum:방번호,content:내용
+                    let msg=chatObj.sender+//메시지의 포맷 = 발신자 번호,name:발신인,roomnum:방번호,content:내용
                             ',name:'+alertObj.senderName+
                             ',roomnum:'+chat.roomnum+
                             ',content:'+chat.content;
@@ -235,18 +237,18 @@ function readChat(data){//방번호와 본인 번호
     initChatObj();
 }
 function appendChat(chat){// 매개변수에 담겨있는 정보-방 번호,발신자 번호,내용,일시
-    var roomnum;
-    var content;
-    var receiver;
-    var msgType='2';
-    var msg;
+    let roomnum,
+        content,
+        receiver,
+        msg;
+    const msgType='2';
     if(chat[0]!=undefined){//배열이라면
-        $.each(chat,function(key,value){
+        for(let value of chat) {
             if(value.sender!=chatObj.sender){//만약 보낸 이가 본인이 아니라면,
                 receiver=value.sender;//신호를 보낼 수신인으로 설정
             }
             printRog(value);
-        });
+        }
         roomnum=chat[0].roomnum;
         content=chat[chat.length-1].content;
     }else {//배열이 아니라면
@@ -257,8 +259,8 @@ function appendChat(chat){// 매개변수에 담겨있는 정보-방 번호,발�
             receiver=chat.sender;//신호를 보낼 수신인으로 설정
         }
     }
-    $('#chatRog'+roomnum).scrollTop($('#chatRog'+roomnum)[0].scrollHeight);//스크롤 하단으로 위치하는 코드
-    //console.log('스크롤 하단 이동');
+    // $('#chatRog'+roomnum).scrollTop($('#chatRog'+roomnum)[0].scrollHeight);//스크롤 하단으로 위치하는 코드
+    document.getElementById('chatRog'+roomnum).scrollTop=document.getElementsById('chatRog'+roomnum).scrollHeight;//스크롤 하단으로 위치하는 코드
     initLastChat(roomnum,content);//헤드 채팅방 목록에 마지막 채팅 갱신하기
     msg=roomnum;
     if(socket){
@@ -266,12 +268,14 @@ function appendChat(chat){// 매개변수에 담겨있는 정보-방 번호,발�
     }
 }
 function printRog(chat){
-    var listType; // 채팅 li의 말풍선 클래스
-    var chatType; // 채팅 p의 글자색 클래스
-    var idx=chat.stime.indexOf('일');
-    var date=chat.stime.slice(0,idx+1);
-    var time=chat.stime.slice(idx+2);
+    let listType; // 채팅 li의 말풍선 클래스
+    let chatType; // 채팅 p의 글자색 클래스
+    let time=chat.stime.slice(idx+2);
     time=(time.slice(0,2)=='AM'?'오전 ':'오후 ')+time.slice(2);
+    const idx=chat.stime.indexOf('일');
+    const date=chat.stime.slice(0,idx+1);
+    const chatRoom=document.getElementsById('chatRog'+chat.roomnum); // 채팅방
+    const textColor="var(--text-gray)";
     if(chat.sender==chatObj.sender){
         listType='chatRight';
         chatType='chatMine';
@@ -282,21 +286,54 @@ function printRog(chat){
         divType='timeStDivLeft';
     };
     if(dateLineChk(date)){//마지막 날짜 로그와 채팅 로그의 날짜가 일치하지 않을 경우
-        $('#chatRog'+chat.roomnum).append(
-            '<li class="dateLine">'+
-                '<hr>'+
-                '<p class="dateRog">'+date+'</p>'+
-            '</li>'
-        );
+        const dateLine=document.createElement("li");
+        const dateRog=document.createElement("p");
+
+        dateRog.className="dateRog";
+        dateLine.className="dateLine";
+
+        dateRog.appendChild(document.createTextNode(date));
+        dateLine.appendChild(document.createElement("hr"));
+        dateLine.appendChild(dateRog);
+        chatRoom.appendChild(dateLine);
     };
-    $('#chatRog'+chat.roomnum).append(
-        '<li class="chatRogli '+listType+'">'+//리스트 타입에 따라 요소의 위치가 달라짐
-            (listType=='chatRight'?'':'<p class="chatRogP '+chatType+'">'+chat.content+'</p>')+
-            '<div class="timeStDiv '+divType+'"><span class="chatStNum" '+(chat.state==0?'>읽지 않음':'style="color:var(--text-gray)">읽음')+'</span>'+
-            '<p class="timeRog">'+time+'</p></div>'+
-            (listType=='chatRight'?'<p class="chatRogP '+chatType+'">'+chat.content+'</p>':'')+
-        '</li>'
-    );
+    const chatRogLi=document.createElement("li");
+    const chatRogP=document.createElement("p");
+    const timeRogP=document.createElement("p");
+    const timeStDiv=document.createElement("div");
+    const chatStNum=document.createElement("span");
+
+    chatRogLi.className="chatRogli "+listType;
+    chatRogP.className="chatRogP "+chatType;
+    timeStDiv.className="timeStDiv "+divType;
+    chatStNum.className="chatStNum";
+    timeRogP.className="timeRog";
+
+    chatRogP.appendChild(document.createTextNode(chat.content));
+    timeRogP.appendChild(document.createTextNode(time));
+    if(chat.state==0){
+        chatStNum.appendChild(document.createTextNode("읽지 않음"));
+    }else{
+        chatStNum.style.color=textColor;
+        chatStNum.appendChild(document.createTextNode("읽음"));
+    }
+
+    chatRogLi.appendChild(timeStDiv);
+    chatRogLi.appendChild(timeRogP);
+    if(listType=='chatRight'){
+        chatRogLi.appendChild(chatRogP);
+    }else{
+        chatRogLi.prepend(chatRogP);
+    }
+    chatRoom.appendChild(chatRogLi);
+    // $('#chatRog'+chat.roomnum).append(
+    //     '<li class="chatRogli '+listType+'">'+//리스트 타입에 따라 요소의 위치가 달라짐
+    //         (listType=='chatRight'?'':'<p class="chatRogP '+chatType+'">'+chat.content+'</p>')+
+    //         '<div class="timeStDiv '+divType+'"><span class="chatStNum" '+(chat.state==0?'>읽지 않음':'style="color:var(--text-gray)">읽음')+'</span>'+
+    //         '<p class="timeRog">'+time+'</p></div>'+
+    //         (listType=='chatRight'?'<p class="chatRogP '+chatType+'">'+chat.content+'</p>':'')+
+    //     '</li>'
+    // );
 }
 function dateLineChk(date){
     var lastDateRog=$('.dateRog').last().text();
@@ -509,12 +546,12 @@ function printHeaderList(list) {//헤더에 알림 리스트 출력
         msgBodySpan.id="msg"+value.ano;
         alertDel.id="alertDel"+value.ano;
         
+        //조립
         msgHeaderSpan.appendChild(document.createTextNode(value.typename));
         msgBodySpan.appendChild(document.createTextNode(value.msg));
         dateSpan.appendChild(document.createTextNode(value.date));
         byBsSpan.appendChild(document.createTextNode("by "+value.senderName));
         
-        //조립
         msgTopDiv.appendChild(msgHeaderSpan);
         msgTopDiv.appendChild(msgBodySpan);
         msgBottomDiv.appendChild(dateSpan);

@@ -1,11 +1,11 @@
 //전역변수 선언-모든 홈페이지에서 사용 할 수 있게 index에 저장
 var socket = null;
 
-window.onload=function () {
+window.addEventListener("load",function () {
   connectWs();
   fadeIn();
   initIndexEvent();
-};
+});
 function connectWs() {
   socket = new WebSocket("ws://localhost:8080/echo.do");
   // socket = new WebSocket("ws://54.180.33.3:8080/echo.do");
@@ -39,7 +39,7 @@ function connectWs() {
         const $guestRoom=document.getElementById(sendermno+'room'+roomnum);
         if($guestRoom!=undefined){//상대방과 열려있는 채팅방이 있다면
           console.log('채팅 읽음 입장');
-          var chat={//채팅로그를 더하기 위한 객체
+          const chat={//채팅로그를 더하기 위한 객체
             roomnum:roomnum,
             sender:sendermno,
             content:content,
@@ -53,7 +53,7 @@ function connectWs() {
             initLastChat(roomnum,content);
             rlDotCountUp(roomnum);
           }else{//헤드 채팅방 리스트에 해당 채팅방이 없다면
-            var room={//헤드의 채팅방을 만들기 위한 객체
+            const room={//헤드의 채팅방을 만들기 위한 객체
               addressee:sendermno,
               roomnum:roomnum,
               guest:senderName,
@@ -112,7 +112,7 @@ function initIndexEvent(){
   });
 }
 function showMap() {
-	var num = ""
+	var num = "";
 	var inputText = $("#searchBar").val();
 
 	num = $('.btn_selected').attr('value');

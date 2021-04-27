@@ -220,21 +220,21 @@ function resetSearch() {
   $(".search")[0].value = "";
   $(".searchBox select").eq(0).prop("selected", true);
 }
-function ajax() {
-  //ajax로 리스트 받아오기
-  //console.log("ajax 함수 진입");
+function listAjax() {
   $.post({
     url: "/getRsvListBs.do",
     data: pageObj,
     success: function (data) {
-      var result = JSON.parse(data);
-      $(".content_header p:nth-child(1) span").html(result.totalPostCount);
-      var list = result.rsvListLno;
-      printlist(list);
-      initPageObj(result);
-
-      //console.log("ajax 완료");
+      let result = JSON.parse(data);
+      $(".content_header p:nth-child(1) span").html(result.totalPostCount);// 총 개수 반영
+      let list = result.rsvListLno;
+      printlist(list); // 리스트 출력
+      initPageObj(result); // 객체 초기화
     },
+    fail: function(){
+      alert("페이지를 불러올 수 없습니다.");
+      location.href="/index.do"; // 메인 페이지로 이동
+    }
   });
 }
 function initModal() {

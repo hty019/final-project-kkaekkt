@@ -11,7 +11,7 @@ public class CommVO {
 	private int depth; //0.댓글 1.대댓글
 	private int eval;//평가
 	private String content;
-	private String rdate; //date -> Timestamp -> date_format 쿼리를 이용한 String으로 날짜받기 리팩토링 완료(03-25)
+	private String rdate; //date_format 쿼리를 이용한 String으로 날짜받기
 	private String dateText;
 	private int replytf;//답글 여부
 	
