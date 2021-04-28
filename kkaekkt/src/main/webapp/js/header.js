@@ -1,5 +1,4 @@
 window.addEventListener("load",function() {
-    console.log('무야호');
     initHeaderEvent();
     headerAlertAjax();
     headerRoomLiAjax();
@@ -178,9 +177,9 @@ function initChatEvent(){
     });
 }
 function rlDotToZero(roomnum){//읽을 때 해당 채팅방의 안읽은 개수 초기화
-    const rlDot = document.getElementById("rlDot"+roomnum);
-    rlDot.style.display='none';
-    rlDot.innerText=0;
+    const $rlDot = document.getElementById("rlDot"+roomnum);
+    $rlDot.style.display='none';
+    $rlDot.innerText=0;
     initChatDot();//전체 채팅 안읽은 개수 초기화
 }
 function initLastChat(roomnum,content){//준비물:객체.roomnum, 객체.content
@@ -335,7 +334,7 @@ function dateLineChk(date){
     return true;//마지막 날짜 로그와 일치하지 않음
 }
 function readAlert(header) {//알림 탭 페이지 공용메서드... 이 부분은 수정 필요
-    var url;
+    let url;
     if(alertObj.mtype==1){//만약 개인 회원이라면
         if(header=='[결제]')//헤더가 결제라면
             url="/jsp/mypageUser/mypagePs.jsp";
@@ -362,12 +361,11 @@ function readAlert(header) {//알림 탭 페이지 공용메서드... 이 부분
     });
 }
 function crtRoom(guest) {
-    var rooms=$('.chatBox'); //먼저 열려있는 채팅방을 검사한다.
-    if(rooms!=undefined){//만약 방이 하나이상 존재한다면,
-        for(var i=0;i<rooms.length;i++){
-            mno=rooms.eq(i) //i 번째 방의
-                .attr('id') //id 에서
-                .split('room')[0]; //mno부분을 추출한다.
+    let $rooms=document.querySelectorAll('.chatBox');//먼저 열려있는 채팅방을 검사한다.
+    if($rooms!=undefined){//만약 방이 하나이상 존재한다면,
+        const roomLi=Array.from($rooms);
+        for(let i=0;i<roomLi.length;i++){
+            const mno=roomLi[i].id.split('room')[0];//i 번째 방의 id 에서 mno부분을 추출한다.
             if(Number(mno)==chatObj.addressee){//열려있는 방 중 이미 상대방과의 채팅방이 있다면,
                 return; //아무것도 하지 않고 리턴한다.
             }
@@ -377,7 +375,7 @@ function crtRoom(guest) {
         url:'/crtRoom.do',
         data:chatObj,
         success:function(result) {//반환값은 map (방번호=roomnum와 채팅로그=charRog가 저장됨)
-            var room=JSON.parse(result);
+            let room=JSON.parse(result);
             if(rooms.length==3){//만약 3개의 채팅방이 개설된 상태라면
                 rooms.eq(0).remove();//제일 먼저 생성된 채팅방을 지움
             }
@@ -403,9 +401,10 @@ function initChatObj(){//초기화
     delete chatObj.addressee;//받는이 지움
 }
 function rlDotCountUp(roomnum){
-    var rl=$('#rlDot'+roomnum);
-    rl.text(Number(rl.text())+1);//카운트를 하나 올려서 넣어준다.
-    rl.show();//무조건 1 이상이므로, show
+    const $rlDot = document.getElementById("rlDot"+roomnum);
+    // let rl=$('#rlDot'+roomnum);
+    $rlDot.innerText=(Number($rlDot.innerText)+1);//카운트를 하나 올려서 넣어준다.
+    $rlDot.style.display='block';//무조건 1 이상이므로, show
     initChatDot();//전체 안읽은 개수 초기화
 }
 function printRoomTemplateFn(tags, addressee, roomnum, guest) {
@@ -414,7 +413,7 @@ function printRoomTemplateFn(tags, addressee, roomnum, guest) {
             tags[8] + roomnum + tags[9]);
 }
 function printRoom(room){//필요한 정보:수신자번호,방번호,수신자 명
-    const chatContainer=document.querySelector('.chatContainer');
+    const $chatContainer=document.querySelector('.chatContainer');
     const template = printRoomTemplateFn`<li class="chatBox" id="${room.addressee}room${room.roomnum}">
                                             <div class="chatBoxHeader">
                                                 💬ㅤ<span id="guest${room.roomnum}">${room.guest}</span>
@@ -426,7 +425,7 @@ function printRoom(room){//필요한 정보:수신자번호,방번호,수신자 
                                                 <textarea class="chatText"placeholder="대화를 입력하세요"></textarea><button id="${room.addressee}sendBtn${room.roomnum}" class="chatWriteBtn">전송</button>
                                             </div>
                                         </li>`;
-    chatContainer.innerHTML+=template;
+    $chatContainer.innerHTML+=template;
     rlDotToZero(room.roomnum);//헤더의 채팅방 안읽은 개수 초기화
 }
 function printRoomLiTemplateFn(tags,addressee,roomnum,guest,content,counts) {
@@ -440,8 +439,8 @@ function printRoomLiTemplateFn(tags,addressee,roomnum,guest,content,counts) {
             roomnum+tags[5]+content+tags[6]+roomnum+tags[7]+counts+tags[8]+roomnum+tags[9]);
 }
 function printRoomLi(room){
-    const chatFooter=document.querySelector('.chatfooter');
-    const rlDot = document.getElementById("rlDot"+room.roomnum);
+    const $chatFooter=document.querySelector('.chatfooter');
+    const $rlDot = document.getElementById("rlDot"+room.roomnum);
     const template = printRoomLiTemplateFn`<ul class="chatList" id="${room.addressee}roomLi${room.roomnum}">
                                             <li>
                                                 <p id="guest${room.addressee}">${room.guest}</p>
@@ -453,9 +452,9 @@ function printRoomLi(room){
                                             </li>
                                         </ul>`;//컨텐츠가 없을 때는 공백, 있을 때는 정상출력
                                                 //안 읽은 채팅이 없을 때는 0, 있을 때는 정상출력
-    chatFooter.innerHTML+=template;
+    $chatFooter.innerHTML+=template;
     if(room.counts!=undefined && room.counts!=0){ //만약 안읽은 채팅의 개수가 0이 아니라면 보이기
-        rlDot.style.display='block';
+        $rlDot.style.display='block';
     }
     initChatDot();//전체 안읽은 개수 초기화
 }
