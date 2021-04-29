@@ -12,14 +12,14 @@ const regBth = /^(19[0-9][0-9]|20\d{2})(0[0-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])
 const regPh = /^[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}$/; // 전화번호 형태 : 전화번호 형태 000-0000-0000 만 받는다.
 const regMailCode = /^[0-9]{6}$/;
 
-const id = document.getElementById("id");
-const pw = document.getElementById("pw");
-const repw = document.getElementById("repw");
-const name = document.getElementById("name");
-const birth = document.getElementById("birth");
-const phone = document.getElementById("phone");
-const address = document.getElementById("address");
-const email = document.getElementById("email");
+const $id = document.getElementById("id");
+const $pw = document.getElementById("pw");
+const $repw = document.getElementById("repw");
+const $name = document.getElementById("name");
+const $birth = document.getElementById("birth");
+const $phone = document.getElementById("phone");
+const $address = document.getElementById("address");
+const $email = document.getElementById("email");
 // submit
 let formatpw = 0;
 let formatbirth = 0;
@@ -85,13 +85,11 @@ function emailApi() {
 }
 // 인증번호 이메일 전송
 function emailDuplChk() {
-  const email = document.getElementById("email").value;
-
   $.ajax({
     url: "/findemail.do",
     type: "POST",
     data: {
-      email: email,
+      email: $email.value,
     },
     success: function (data) {
       const key = JSON.parse(data);
@@ -135,9 +133,9 @@ document.getElementById("mail_check").onclick = function () {
 
 // 인증코드 맞는지 확인 (인증하기 버튼 클릭시 실행)
 function checkemailNum() {
-  const inputCode =document.querySelector(".mail_check_input").value; // 입력코드
-  if (regMailCode.test(inputCode)) {
-    if (inputCode == mailCode) {
+  const $inputCode =document.querySelector(".mail_check_input").value; // 입력코드
+  if (regMailCode.test($inputCode)) {
+    if ($inputCode == mailCode) {
       timeStop();
       formatemailNum = 1;
       alert("이메일 인증이 완료되었습니다.");
@@ -163,20 +161,20 @@ function checkemailNum() {
 }
 
 // 온로드
-window.onload = function () {
+window.addEventListener("load",()=>{
   initKeyEvent();
-};
+});
 
 function initKeyEvent() {
   // id
-  id.addEventListener("keyup", () => {//중복검사 이후 아이디를 변경할 경우를 대비함
+  $id.addEventListener("keyup", () => {//중복검사 이후 아이디를 변경할 경우를 대비함
     formatidchk = 0;
   });
 
   // pw
-  pw.addEventListener("keyup", () => {
-    if (!regPw.test(pw.value)) {
-      if (pw.value.length == 0) {
+  $pw.addEventListener("keyup", () => {
+    if (!regPw.test($pw.value)) {
+      if ($pw.value.length == 0) {
         document.getElementById("pw_label").innerText = "";
       } else {
         document.getElementById("pw_label").innerText =
@@ -188,8 +186,8 @@ function initKeyEvent() {
   });
 
   // re pw
-  repw.addEventListener("keyup", () => {
-    if (repw.value != pw.value) {
+  $repw.addEventListener("keyup", () => {
+    if ($repw.value != pw.value) {
       document.getElementById("repw_label").innerText =
         "위 비밀번호와 일치하지 않습니다.";
     } else {
@@ -198,12 +196,12 @@ function initKeyEvent() {
     }
   });
 //생년월일 입력형식 확인
-  birth.addEventListener("keyup", () => {
+  $birth.addEventListener("keyup", () => {
     // let formatbirth = 0;
     formatbirth = 0;
     //20210101
-    if (!regBth.test(birth.value)) {
-      if (birth.value.length == 0) {
+    if (!regBth.test($birth.value)) {
+      if ($birth.value.length == 0) {
         document.getElementById("birth_label").innerText = "";
       } else {
         document.getElementById("birth_label").innerText =
@@ -216,11 +214,10 @@ function initKeyEvent() {
     }
   });
 //전화번호 입력형식 확인
-  
-  phone.addEventListener("keyup", () => {
+  $phone.addEventListener("keyup", () => {
     formatph = 0;
-    if (!regPh.test(phone.value)) {
-      if (phone.value.length == 0) {
+    if (!regPh.test($phone.value)) {
+      if ($phone.value.length == 0) {
         document.getElementById("phone_label").innerText = "";
       } else {
         document.getElementById("phone_label").innerText =
@@ -232,10 +229,10 @@ function initKeyEvent() {
     }
   });
   // 이메일 입력형식 확인
-  email.addEventListener("keyup", () => {
+  $email.addEventListener("keyup", () => {
     formatemail = 0;
-    if (!regEmail.test(email.value)) {
-      if (email.value.length == 0) {
+    if (!regEmail.test($email.value)) {
+      if ($email.value.length == 0) {
         document.getElementById("checkemail").innerText = "";
       } else {
         document.getElementById("checkemail").innerText =
@@ -248,90 +245,79 @@ function initKeyEvent() {
   });
   // Jquery, 입력시 불가 문자 삭제
   //아이디 한글입력 안되게 처리 */
-  $("input[name=id]").keyup(function (event) {
+  document.querySelector("input[name=id]").addEventListener("keyup",(event)=>{
     if (!(event.keyCode >= 37 && event.keyCode <= 40)) {
-      var inputVal = $(this).val();
-      $(this).val(inputVal.replace(/[^a-z0-9]/gi, ""));
+      const inputVal = event.target.value;
+      event.target.value=inputVal.replace(/[^a-z0-9]/gi, "");
     }
   });
   // 이름 영어+한글만 입력
-  $("input[name=name]").keyup(function (event) {
+  document.querySelector("input[name=name]").addEventListener("keyup",(event)=>{
     if (!(event.keyCode >= 37 && event.keyCode <= 40)) {
-      var inputVal = $(this).val();
-      $(this).val(
-        inputVal.replace(/^[0-9]+$|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\\]/gi, "")
-        // 이름 한글만 입력 가능
-        // inputVal.replace(/[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\\]/g, "")
-      );
+      const inputVal = event.target.value;
+      event.target.value=
+        inputVal.replace(/^[0-9]+$|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"\\]/gi, "");//영어+한글만 인력
     }
   });
-
   // 폰넘버 숫자+하이픈
-  $("input[name=phone]").keyup(function (event) {
+  document.querySelector("input[name=phone]").addEventListener("keyup",(event)=>{
     if (!(event.keyCode >= 37 && event.keyCode <= 40)) {
-      var inputVal = $(this).val();
-      $(this).val(inputVal.replace(/[^0-9-]$/gi, ""));
+      const inputVal = event.target.value;
+      event.target.value=inputVal.replace(/[^0-9-]$/gi, "");
     }
   });
-
   //생일 숫자만
-  $("input[name=birth]").keyup(function (event) {
+  document.querySelector("input[name=birth]").addEventListener("keyup",(event)=>{
     if (!(event.keyCode >= 37 && event.keyCode <= 40)) {
-      var inputVal = $(this).val();
-      $(this).val(inputVal.replace(/[^0-9]/gi, ""));
+      const inputVal = event.target.value;
+      event.target.value=inputVal.replace(/[^0-9]/gi, "");
     }
   });
-
   // 이메일 영어+숫자
-  $("input[name=email]").keyup(function (event) {
+  document.querySelector("input[name=email]").addEventListener("keyup",(event)=>{
     if (!(event.keyCode >= 37 && event.keyCode <= 40)) {
-      var inputVal = $(this).val();
-      $(this).val(
-        inputVal.replace(
-          /[^a-z0-9+$|[ \[\]{}()<>?|`~!#$%^&*-_+=,.;:\"\\]/gi,
-          ""
-        )
-      );
+      const inputVal = event.target.value;
+      event.target.value = inputVal.replace(/[^a-z0-9+$|[ \[\]{}()<>?|`~!#$%^&*-_+=,.;:\"\\]/gi,"");
     }
   });
 } // window onload
 
 // 중복확인
-$("#id").focusout(function () {
+$id.addEventListener("focusout",()=>{
   let idLbl = document.getElementById("id_label");
   idLbl.style.color = "var(--text-red)";
-  if ($("#id").val() == "") {
+  if ($id.value == "") {
     // alert("아이디를 입력하세요.");
     idLbl.innerText = "아이디는 필수 입력사항입니다.";
-    $("#id").focus();
+    $id.focus();
     return false;
   }
-  if ($("#id").val().length < 6) {
+  if ($id.value.length < 6) {
     // alert("아이디를 6자 이상으로 입력해 주세요.");
     idLbl.innerText = "아이디를 6자 이상으로 입력해 주세요.";
-    $("#id").focus();
+    $id.focus();
     return false;
   }
-  if (!regId.test(id.value)) {
+  if (!regId.test($id.value)) {
     // alert("아이디는 6자 이상, 최소 하나의 알파벳(a-z)을 포함해야 합니다.");
     idLbl.innerText =
       "아이디는 6자 이상, 최소 하나의 알파벳(a-z)을 포함해야 합니다.";
-    $("#id").focus();
+    $id.focus();
     return false;
   }
-
+  
   $.ajax({
     url: "/idchk.do",
     type: "POST",
     data: {
-      id: $("#id").val(),
+      id: $id.value,
     },
     success: function (data) {
       // console.log(data);
-      var key = JSON.parse(data);
+      let key = JSON.parse(data);
       if (key != 0) {
         idLbl.innerText = "중복된 아이디가 있습니다.";
-        $("#id").focus();
+        $id.focus();
         // alert("중복된 아이디가 있습니다.");
       } else if (key == 0) {
         formatidchk = 1;
@@ -352,62 +338,58 @@ function fn_combine() {
     document.getElementById("detailAddress").value +
     ", " +
     document.getElementById("extraAddress").value;
-  //console.log(ad);
-  // document.getElementById("address").value = address;
-  address.value = ad;
+
+  $address.value = ad;
   formatad = 1;
-  //console.log(address);
 }
 
-//submit check
-// function submit() {
-$("#join_submit").on("click", function () {
+document.getElementById("join_submit",()=>{
+  const $postCode=document.getElementById("postcode");
   //주소 합치기
   fn_combine();
   //
-
   if (formatidchk == 0) {
     alert("아이디 중복확인을 해 주세요.");
-    $("#id").focus();
+    $id.focus();
     return false;
   }
-  if ($("#pw").val() == "") {
+  if ($pw.value == "") {
     alert("비밀번호를 입력하세요.");
-    $("#pw").focus();
+    $pw.focus();
     return false;
   }
-  if ($("#repw").val() == "" || formatpw != 1) {
+  if ($repw.value == "" || formatpw != 1) {
     alert("비밀번호를 재입력하세요.");
-    $("#repw").focus();
+    $repw.focus();
     return false;
   }
-
-  if ($("#name").val() == "") {
+  
+  if ($name.value == "") {
     alert("이름을 입력하세요.");
-    $("#name").focus();
+    $name.focus();
     return false;
   }
-  if ($("#birth").val() == "" || formatbirth != 1) {
+  if ($birth.value == "" || formatbirth != 1) {
     alert("생년월일을 입력하세요.");
-    $("#birth").focus();
+    $birth.focus();
+    return false;
+  }
+  
+  if ($phone.value == "" || formatph != 1) {
+    alert("전화번호를 입력하세요.");
+    $phone.focus();
     return false;
   }
 
-  if ($("#phone").val() == "" || formatph != 1) {
-    alert("전화번호를 입력하세요.");
-    $("#phone").focus();
-    return false;
-  }
-  if ($("#postcode").val() == "" || formatad != 1) {
+  if ($postCode.value == "" || formatad != 1) {
     alert("주소를 입력하세요.");
-    $("#postcode").focus();
+    $postCode.focus();
     return false;
   }
-  if ($("#email").val() == "" || formatemailNum != 1) {
+  if ($email.value == "" || formatemailNum != 1) {
     alert("이메일을 인증하세요.");
-    $("#email").focus();
+    $email.focus();
     return false;
   }
-  $("form").submit();
+  document.querySelector("form").submit(); // 향후 유지보수를 위해선, id를 부여하고 지정하는 것이 맞음
 });
-// }
