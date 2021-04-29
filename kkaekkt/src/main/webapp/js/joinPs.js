@@ -38,22 +38,22 @@ $ComTimer.prototype = {
   timer: "",
   domId: "",
   fnTimer: function () {
-    var min = Math.floor(this.comSecond / 60);
-    var sec = this.comSecond % 60;
+    let min = Math.floor(this.comSecond / 60);
+    let sec = this.comSecond % 60;
     this.domId.innerText = `${min}:${sec < 10 ? `0${sec}` : sec}`;
     this.comSecond--; // 1초씩 감소
     if (this.comSecond < 0) {
       // 시간이 종료 되었으면..
       clearInterval(this.timer); // 타이머 해제
       alert("인증시간이 초과하였습니다. 다시 이메일 인증을 해 주세요.");
-      $("#timeout").hide();
-      $(".mail_check_input").attr("disabled", true);
-      $("#mail_check").attr("disabled", true);
-      $(".mail_check_input").attr("id", "mail_check_input_box_false");
+      document.getElementById("timeout").style.display="none";
+      document.querySelector(".mail_check_input").disabled="true";
+      document.querySelector(".mail_check_input").id="mail_check_input_box_false";
+      document.getElementById("mail_check").disabled="true";
     }
   },
 };
-var AuthTimer = new $ComTimer();
+let AuthTimer = new $ComTimer();
 
 // 이메일 입력형식 확인
 document.getElementById("btn_checkemail").onclick = function () {
@@ -68,35 +68,33 @@ document.getElementById("btn_checkemail").onclick = function () {
 // 인증번호 이메일 전송
 function emailApi() {
   //console.log("이메일인증 클릭");
-  var email = $(".mail_input").val(); // 입력한 이메일
-
+  const email=document.querySelector(".mail_input").value; //입력한 이메일
   $.ajax({
     type: "GET",
     url: "/mailCheck.do?email=" + email,
     success: function (data) {
       ////console.log("data : " + data);
-      $(".mail_check_input").attr("disabled", false);
+      document.querySelector(".mail_check_input").disabled='false';
       document.getElementById("mail_check").disabled = false;
-      $(".mail_check_input").attr("id", "mail_check_input_box_true");
+      document.querySelector(".mail_check_input").id="mail_check_input_box_true";
       alert(" 인증번호를 전송했습니다.");
       timerStart();
-      code = data;
+      mailCode = data;
     },
   });
 }
 // 인증번호 이메일 전송
 function emailDuplChk() {
-  var email = $(".mail_input").val(); // 입력한 이메일
+  const email = document.getElementById("email").value;
 
   $.ajax({
     url: "/findemail.do",
     type: "POST",
     data: {
-      email: $("#email").val(),
+      email: email,
     },
     success: function (data) {
-      //console.log(data);
-      var key = JSON.parse(data);
+      const key = JSON.parse(data);
       if (key != 0) {
         alert("해당 이메일로 가입된 아이디가 존재합니다.");
         return false;
@@ -137,22 +135,21 @@ document.getElementById("mail_check").onclick = function () {
 
 // 인증코드 맞는지 확인 (인증하기 버튼 클릭시 실행)
 function checkemailNum() {
-  var inputCode = $(".mail_check_input").val(); // 입력코드
+  const inputCode =document.querySelector(".mail_check_input").value; // 입력코드
   if (regMailCode.test(inputCode)) {
-    if (inputCode == code) {
+    if (inputCode == mailCode) {
       timeStop();
       formatemailNum = 1;
       alert("이메일 인증이 완료되었습니다.");
-      $("#timeout").hide();
-      $(".mail_check_input").val("");
-      $("#mail_check").attr("disabled", true);
-      $(".mail_check_input").attr("disabled", true);
-      // $(".mail_check_input").attr("id", "mail_check_input_box_false");
+      const $timeout=document.getElementById("timeout");
+      $timeout.style.display="none";
+      document.querySelector(".mail_check_input").value='';
+      document.querySelector(".mail_check_input").disabled=true;
+      document.getElementById("mail_check").disabled=true;
       // 적용안되는중
-      $("#btn_checkemail").attr("disabled", true);
-      // doncument.getElementById("btn_checkemail").disabled = true;
-      $(".mail_check_input").val("인증이 완료되었습니다.");
-    } else if ($("#timeout").text() != "0:00") {
+      document.getElementById("btn_checkemail").disabled=true;
+      document.querySelector(".mail_check_input").value="인증이 완료되었습니다.";
+    } else if ($timeout.innerText != "0:00") {
       //시간이 남았는데 코드가 일치하지 않는다면
       formatemailNum = 0;
       alert("인증번호가 일치하지 않습니다.");
@@ -161,7 +158,7 @@ function checkemailNum() {
     //코드가 숫자 6자리가 아니라면
     formatemailNum = 0;
     alert(" 인증번호를 다시 확인해주세요.");
-    $("#reqinput").attr("class", "incorrect");
+    document.getElementById("reqinput").className="incorrect";
   }
 }
 
@@ -172,18 +169,8 @@ window.onload = function () {
 
 function initKeyEvent() {
   // id
-  id.addEventListener("keyup", () => {
+  id.addEventListener("keyup", () => {//중복검사 이후 아이디를 변경할 경우를 대비함
     formatidchk = 0;
-    // if (!regId.test(id.value)) {
-    //   if (id.value.length == 0) {
-    //     document.getElementById("id_label").innerText = "";
-    //   } else {
-    //     document.getElementById("id_label").innerText =
-    //       "아이디는 6자 이상, 최소 하나의 알파벳(a-z)을 포함해야 합니다.";
-    //   }
-    // } else {
-    //   document.getElementById("id_label").innerText = "";
-    // }
   });
 
   // pw
@@ -229,11 +216,9 @@ function initKeyEvent() {
     }
   });
 //전화번호 입력형식 확인
-  //birth.addEventListener("keyup", () => {
+  
   phone.addEventListener("keyup", () => {
-    // let formatph = 0;
     formatph = 0;
-    // if (!regPh.test(phone.value)) {
     if (!regPh.test(phone.value)) {
       if (phone.value.length == 0) {
         document.getElementById("phone_label").innerText = "";
@@ -248,10 +233,8 @@ function initKeyEvent() {
   });
   // 이메일 입력형식 확인
   email.addEventListener("keyup", () => {
-    //20210101
     formatemail = 0;
     if (!regEmail.test(email.value)) {
-      //   formatemail = 0;
       if (email.value.length == 0) {
         document.getElementById("checkemail").innerText = "";
       } else {
@@ -263,7 +246,6 @@ function initKeyEvent() {
       document.getElementById("checkemail").innerText = "";
     }
   });
-
   // Jquery, 입력시 불가 문자 삭제
   //아이디 한글입력 안되게 처리 */
   $("input[name=id]").keyup(function (event) {
