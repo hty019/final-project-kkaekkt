@@ -61,29 +61,29 @@ $ComTimer.prototype = {
     }
   },
 };
-var AuthTimer = new $ComTimer();
-$(document).ready(function () {
-  //console.log("레디완료");
+let AuthTimer = new $ComTimer();
+window.addEventListener("load",()=>{
   scheduleHtml(); //운영시간 html 출력
   initEvent();
 });
 function scheduleHtml() {
+  const $weekBoxUl = document.querySelector(".weekBox ul");
   //운영시간 html 생성
-  var opt;
-  for (var idx = 0; idx < 10; idx++) {
-    $(".weekBox ul").append(
+  let $opt;
+  for (let idx = 0; idx < 10; idx++) {
+    $weekBoxUl.innerHTML+=
       "<li class='hide' style='order:" +
         (idx + 1) +
         "'><button>" +
         week[idx] +
         "</button><span>시간<span>" +
-        "<select></select>~<select></select></li>"
-    );
-    opt = $(".weekBox li[style='order:" + (idx + 1) + "'] select");
-    for (var i = 0; i < 25; i++) {
-      opt.append("<option>" + (i < 10 ? "0" + i : i) + ":00</option>");
+        "<select></select>~<select></select></li>";
+
+    $opt = document.querySelector(".weekBox li[style='order:" + (idx + 1) + "'] select");
+    for (let i = 0; i < 25; i++) {
+      $opt.innerHTML+="<option>" + (i < 10 ? "0" + i : i) + ":00</option>";
       if (i != 24) {
-        opt.append("<option>" + (i < 10 ? "0" + i : i) + ":30</option>");
+        $opt.innerHTML+="<option>" + (i < 10 ? "0" + i : i) + ":30</option>";
       }
     }
   }
@@ -91,7 +91,7 @@ function scheduleHtml() {
 function initEvent() {
   $(".selectbox select").change(function () {
     //셀렉트 옵션이 바뀔 때 라벨에 반영되는 이벤트
-    var select_name = $(this).children("option:selected").text();
+    let select_name = $(this).children("option:selected").text();
     $(this).siblings("label").text(select_name);
   });
   $(".bizType div").click(function () {
@@ -114,13 +114,13 @@ function initEvent() {
   });
   $(".week button").click(function () {
     //요일 보이기&숨기기
-    var idx = $(this).index();
+    let idx = $(this).index();
     $(this).toggleClass("selected");
     $(".weekBox ul li[style='order:" + (idx + 1) + "']").toggleClass("hide");
   });
   $(".laundry input[type='checkbox']").change(function () {
     //취급품목-금액 활성화&비활성화
-    var idx = $(this).attr("value");
+    let idx = $(this).attr("value");
     if ($(".laundry input.won").eq(idx).attr("disabled") == "disabled") {
       $(".laundry input.won").eq(idx).attr("disabled", false);
     } else {
@@ -130,7 +130,7 @@ function initEvent() {
   });
   $(".coinLaundry input[type='checkbox']").change(function () {
     //사양정보-금액 활성화&비활성화
-    var idx = $(this).attr("value");
+    let idx = $(this).attr("value");
     if ($(".coinLaundry input.won").eq(idx).attr("disabled") == "disabled") {
       $(".coinLaundry input.won").eq(idx).attr("disabled", false);
       if (idx <= 2) {
@@ -189,7 +189,7 @@ function initEvent() {
       },
       success: function (data) {
         // console.log(data);
-        var key = JSON.parse(data);
+        let key = JSON.parse(data);
         if (key == 1) {
           formatArray[0] = false;
           document.getElementById("idchk").innerText =
