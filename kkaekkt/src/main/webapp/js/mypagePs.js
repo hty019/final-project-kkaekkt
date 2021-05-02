@@ -31,6 +31,7 @@ function initEvent() {
             crtRoom(guest);
         }
     });
+    //
     $('.page_next').click(function() {
         if(!$(this).hasClass('no')) {
             pageObj.currentPageNum+=1;
