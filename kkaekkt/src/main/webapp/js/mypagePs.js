@@ -31,7 +31,6 @@ function initEvent() {
             crtRoom(guest);
         }
     });
-    //
     $('.page_next').click(function() {
         if(!$(this).hasClass('no')) {
             pageObj.currentPageNum+=1;
@@ -74,6 +73,13 @@ function initEvent() {
     });
     
 }
+    /**
+     * 오늘배워온것
+     * greeting
+     * @param rsvNum 
+     * 1. 주석을 다는 것
+     * 2. 예약번호를 의미
+     */
 function cancelRsv(rsvNum) {//주문 취소 버튼을 눌렀을 때 함수
     $.post({
         url:"/cancel.do",
