@@ -115,7 +115,7 @@ function initChatEvent(){
     $chatWrapper.addEventListener("click",function({target}){ //메인 콘테이너의 채팅방 출력되는 영역
         if(target.classList.contains("closeChatBtn")){//채팅방 닫기 버튼을 클릭했다면,
             const array = target.id.split('clsBtn');
-            const $chatRoom = document.getElementsById(array[0]+'room'+array[1]);
+            const $chatRoom = document.getElementById(array[0]+'room'+array[1]);
             $chatRoom.remove();
         }else if(target.classList.contains("chatWriteBtn")){//채팅 입력 버튼을 클릭했다면 
             const chatRog = target.previousElementSibling.value;
@@ -183,7 +183,7 @@ function rlDotToZero(roomnum){//읽을 때 해당 채팅방의 안읽은 개수 
     initChatDot();//전체 채팅 안읽은 개수 초기화
 }
 function initLastChat(roomnum,content){//준비물:객체.roomnum, 객체.content
-    document.getElementsById('lastChat'+roomnum).innerText=content;
+    document.getElementById('lastChat'+roomnum).innerText=content;
 }
 function getChatRog(){
     $.get({
@@ -259,7 +259,7 @@ function appendChat(chat){// 매개변수에 담겨있는 정보-방 번호,발�
         }
     }
     // $('#chatRog'+roomnum).scrollTop($('#chatRog'+roomnum)[0].scrollHeight);//스크롤 하단으로 위치하는 코드
-    document.getElementById('chatRog'+roomnum).scrollTop=document.getElementsById('chatRog'+roomnum).scrollHeight;//스크롤 하단으로 위치하는 코드
+    document.getElementById('chatRog'+roomnum).scrollTop=document.getElementById('chatRog'+roomnum).scrollHeight;//스크롤 하단으로 위치하는 코드
     initLastChat(roomnum,content);//헤드 채팅방 목록에 마지막 채팅 갱신하기
     msg=roomnum;
     if(socket){
@@ -269,11 +269,11 @@ function appendChat(chat){// 매개변수에 담겨있는 정보-방 번호,발�
 function printRog(chat){
     let listType; // 채팅 li의 말풍선 클래스
     let chatType; // 채팅 p의 글자색 클래스
-    let time=chat.stime.slice(idx+2);
-    time=(time.slice(0,2)=='AM'?'오전 ':'오후 ')+time.slice(2);
     const idx=chat.stime.indexOf('일');
+    let time=chat.stime.slice(idx+2); // ex) AM 2:23 출력
+    time=(time.slice(0,2)=='AM'?'오전 ':'오후 ')+time.slice(2);
     const date=chat.stime.slice(0,idx+1);
-    const chatRoom=document.getElementsById('chatRog'+chat.roomnum); // 채팅방
+    const $chatRoom=document.getElementById('chatRog'+chat.roomnum); // 채팅방
     const textColor="var(--text-gray)";
     if(chat.sender==chatObj.sender){
         listType='chatRight';
@@ -294,7 +294,7 @@ function printRog(chat){
         dateRog.appendChild(document.createTextNode(date));
         dateLine.appendChild(document.createElement("hr"));
         dateLine.appendChild(dateRog);
-        chatRoom.appendChild(dateLine);
+        $chatRoom.appendChild(dateLine);
     };
     const chatRogLi=document.createElement("li");
     const chatRogP=document.createElement("p");
@@ -316,15 +316,17 @@ function printRog(chat){
         chatStNum.style.color=textColor;
         chatStNum.appendChild(document.createTextNode("읽음"));
     }
-
+    
+    timeStDiv.appendChild(chatStNum);
+    timeStDiv.appendChild(timeRogP);
     chatRogLi.appendChild(timeStDiv);
-    chatRogLi.appendChild(timeRogP);
+    // chatRogLi.appendChild(timeRogP);
     if(listType=='chatRight'){
         chatRogLi.appendChild(chatRogP);
     }else{
         chatRogLi.prepend(chatRogP);
     }
-    chatRoom.appendChild(chatRogLi);
+    $chatRoom.appendChild(chatRogLi);
 }
 function dateLineChk(date){
     var lastDateRog=$('.dateRog').last().text();
@@ -361,23 +363,25 @@ function readAlert(header) {//알림 탭 페이지 공용메서드... 이 부분
     });
 }
 function crtRoom(guest) {
+    let roomLi;
+
     let $rooms=document.querySelectorAll('.chatBox');//먼저 열려있는 채팅방을 검사한다.
     if($rooms!=undefined){//만약 방이 하나이상 존재한다면,
-        const roomLi=Array.from($rooms);
+        roomLi=Array.from($rooms);
         for(let i=0;i<roomLi.length;i++){
             const mno=roomLi[i].id.split('room')[0];//i 번째 방의 id 에서 mno부분을 추출한다.
             if(Number(mno)==chatObj.addressee){//열려있는 방 중 이미 상대방과의 채팅방이 있다면,
                 return; //아무것도 하지 않고 리턴한다.
             }
-        }
+        }        
     }//열려있는 방 중에 상대방이 없을 경우 ajax 시행으로 넘어감
     $.post({
         url:'/crtRoom.do',
         data:chatObj,
         success:function(result) {//반환값은 map (방번호=roomnum와 채팅로그=charRog가 저장됨)
             let room=JSON.parse(result);
-            if(rooms.length==3){//만약 3개의 채팅방이 개설된 상태라면
-                rooms.eq(0).remove();//제일 먼저 생성된 채팅방을 지움
+            if(roomLi.length==3){//만약 3개의 채팅방이 개설된 상태라면
+                roomLi[0].remove();//제일 먼저 생성된 채팅방을 지움
             }
             room.guest=guest;//게스트명 입력
             room.addressee=chatObj.addressee;//수신자 번호 입력
@@ -407,51 +411,36 @@ function rlDotCountUp(roomnum){
     $rlDot.style.display='block';//무조건 1 이상이므로, show
     initChatDot();//전체 안읽은 개수 초기화
 }
-function printRoomTemplateFn(tags, addressee, roomnum, guest) {
-    return (tags[0] + addressee + tags[1] + roomnum + tags[2] + roomnum + tags[3] + guest +
-            tags[4] + addressee + tags[5] + roomnum + tags[6] + roomnum + tags[7] + addressee+
-            tags[8] + roomnum + tags[9]);
-}
 function printRoom(room){//필요한 정보:수신자번호,방번호,수신자 명
     const $chatContainer=document.querySelector('.chatContainer');
-    const template = printRoomTemplateFn`<li class="chatBox" id="${room.addressee}room${room.roomnum}">
-                                            <div class="chatBoxHeader">
-                                                💬ㅤ<span id="guest${room.roomnum}">${room.guest}</span>
-                                                <i class="fas fa-times closeChatBtn" id="${room.addressee}clsBtn${room.roomnum}"></i>
-                                            </div>
-                                            <ul class="chatRogUl" id="chatRog${room.roomnum}">
-                                            </ul>
-                                            <div class="chatInputBox">
-                                                <textarea class="chatText"placeholder="대화를 입력하세요"></textarea><button id="${room.addressee}sendBtn${room.roomnum}" class="chatWriteBtn">전송</button>
-                                            </div>
-                                        </li>`;
+    const template =    `<li class="chatBox" id="${room.addressee}room${room.roomnum}">
+                            <div class="chatBoxHeader">
+                                💬ㅤ<span id="guest${room.roomnum}">${room.guest}</span>
+                                <i class="fas fa-times closeChatBtn" id="${room.addressee}clsBtn${room.roomnum}"></i>
+                            </div>
+                            <ul class="chatRogUl" id="chatRog${room.roomnum}">
+                            </ul>
+                            <div class="chatInputBox">
+                                <textarea class="chatText"placeholder="대화를 입력하세요"></textarea><button id="${room.addressee}sendBtn${room.roomnum}" class="chatWriteBtn">전송</button>
+                            </div>
+                        </li>`;
     $chatContainer.innerHTML+=template;
     rlDotToZero(room.roomnum);//헤더의 채팅방 안읽은 개수 초기화
-}
-function printRoomLiTemplateFn(tags,addressee,roomnum,guest,content,counts) {
-    if(content==undefined) {
-        content='';
-    }
-    if(counts==undefined){
-        counts=0;
-    }
-    return (tags[0]+addressee+tags[1]+roomnum+tags[2]+addressee+tags[3]+guest+tags[4]+
-            roomnum+tags[5]+content+tags[6]+roomnum+tags[7]+counts+tags[8]+roomnum+tags[9]);
 }
 function printRoomLi(room){
     const $chatFooter=document.querySelector('.chatfooter');
     const $rlDot = document.getElementById("rlDot"+room.roomnum);
-    const template = printRoomLiTemplateFn`<ul class="chatList" id="${room.addressee}roomLi${room.roomnum}">
-                                            <li>
-                                                <p id="guest${room.addressee}">${room.guest}</p>
-                                                <p id="lastChat${room.roomnum}">${room.content}</p>
-                                                <span class="rlDot" id="rlDot${room.roomnum}">${room.counts}</span> 
-                                            </li>
-                                            <li>
-                                                <button class="chatExitBtn" id="chatExitBtn${room.roomnum}">나가기</button>
-                                            </li>
-                                        </ul>`;//컨텐츠가 없을 때는 공백, 있을 때는 정상출력
-                                                //안 읽은 채팅이 없을 때는 0, 있을 때는 정상출력
+    const template =    `<ul class="chatList" id="${room.addressee}roomLi${room.roomnum}">
+                            <li>
+                                <p id="guest${room.addressee}">${room.guest}</p>
+                                <p id="lastChat${room.roomnum}">${room.content}</p>
+                                <span class="rlDot" id="rlDot${room.roomnum}">${room.counts}</span> 
+                            </li>
+                            <li>
+                                <button class="chatExitBtn" id="chatExitBtn${room.roomnum}">나가기</button>
+                            </li>
+                        </ul>`;//컨텐츠가 없을 때는 공백, 있을 때는 정상출력
+                                //안 읽은 채팅이 없을 때는 0, 있을 때는 정상출력
     $chatFooter.innerHTML+=template;
     if(room.counts!=undefined && room.counts!=0){ //만약 안읽은 채팅의 개수가 0이 아니라면 보이기
         $rlDot.style.display='block';
