@@ -429,7 +429,6 @@ function printRoom(room){//필요한 정보:수신자번호,방번호,수신자 
 }
 function printRoomLi(room){
     const $chatFooter=document.querySelector('.chatfooter');
-    const $rlDot = document.getElementById("rlDot"+room.roomnum);
     const template =    `<ul class="chatList" id="${room.addressee}roomLi${room.roomnum}">
                             <li>
                                 <p id="guest${room.addressee}">${room.guest}</p>
@@ -442,6 +441,7 @@ function printRoomLi(room){
                         </ul>`;//컨텐츠가 없을 때는 공백, 있을 때는 정상출력
                                 //안 읽은 채팅이 없을 때는 0, 있을 때는 정상출력
     $chatFooter.innerHTML+=template;
+    const $rlDot = document.getElementById("rlDot"+room.roomnum);
     if(room.counts!=undefined && room.counts!=0){ //만약 안읽은 채팅의 개수가 0이 아니라면 보이기
         $rlDot.style.display='block';
     }
