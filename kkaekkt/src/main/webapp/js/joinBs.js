@@ -17,8 +17,8 @@ const bno = document.getElementById("bno");
 const account = document.getElementById("account");
 const phone = document.getElementById("phoneNum");
 //유효성 통과 여부 체크 객체 (false&true)
-var formatArray = [false, false, false, false, false, false, false];
-var alertArray = [
+const formatArray = [false, false, false, false, false, false, false];
+const alertArray = [
   "아이디",
   "비밀번호",
   "비밀번호 확인",
@@ -27,8 +27,8 @@ var alertArray = [
   "사업자등록번호",
   "계좌번호",
 ];
-var focusArray = [id, pw, repw, email, phone, bno, account];
-var mailCode;
+const focusArray = [id, pw, repw, email, phone, bno, account];
+let mailCode;
 //요일 출력 배열
 const week = [
   "월요일",
@@ -49,8 +49,8 @@ $ComTimer.prototype = {
   timer: "",
   domId: "",
   fnTimer: function () {
-    var min = Math.floor(this.comSecond / 60);
-    var sec = this.comSecond % 60;
+    const min = Math.floor(this.comSecond / 60);
+    const sec = this.comSecond % 60;
     this.domId.innerText = `${min}:${sec < 10 ? `0${sec}` : sec}`;
     this.comSecond--; // 1초씩 감소
     if (this.comSecond < 0) {
