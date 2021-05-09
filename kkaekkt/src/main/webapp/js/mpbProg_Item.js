@@ -2,7 +2,7 @@ $(document).ready(function () {
   initSide();
   initEvent();
   initModal();
-  ajax(); //처음 마이페이지 들어왔을 때, 진행중 주문 항목 출력
+  listAjax(); //처음 마이페이지 들어왔을 때, 진행중 주문 항목 출력
 });
 function initEvent() {
   initPageEvent();
@@ -10,14 +10,14 @@ function initEvent() {
     pageObj.search = $(".search")[0].value;
     pageObj.searchOption = $(".searchBox select")[0].value;
     pageObj.currentPageNum = 1;
-    ajax();
+    listAjax();
   });
   $(".selectbox select").change(function () {
     var select_name = $(this).children("option:selected").text();
     $(this).siblings("label").text(select_name);
     pageObj.order = $(".selectbox select")[0].value;
     pageObj.currentPageNum = 1;
-    ajax();
+    listAjax();
   });
   $(".laundry_nav li").click(function () {
     if (!$(this).hasClass("selected")) {
@@ -25,7 +25,7 @@ function initEvent() {
       pageObj.laundryType = $(this)[0].value;
       $(this).siblings().removeClass("selected");
       $(this).addClass("selected");
-      ajax();
+      listAjax();
     }
   });
   $(".process").on("click", ".cancelBtn", function () {
@@ -112,7 +112,7 @@ function complete() {
         msgSet(result);
         sendAlarm();
       }
-      ajax();
+      listAjax();
       alert("작업이 완료되었습니다.");
       modalClose();
     },
@@ -122,7 +122,7 @@ function enter() {
   if (window.event.keyCode == 13) {
     pageObj.search = $(".search")[0].value;
     pageObj.searchOption = $(".searchBox select")[0].value;
-    ajax();
+    listAjax();
   }
 }
 function initSide() {
@@ -174,31 +174,31 @@ function initPageEvent() {
   $(".page_next").click(function () {
     if (!$(this).hasClass("no")) {
       pageObj.currentPageNum += 1;
-      ajax();
+      listAjax();
     }
   });
   $(".page_prev").click(function () {
     if (!$(this).hasClass("no")) {
       pageObj.currentPageNum -= 1;
-      ajax();
+      listAjax();
     }
   });
   $(".page_prevBlock").click(function () {
     if (!$(this).hasClass("no")) {
       pageObj.currentPageNum = pageObj.blockFirstPageNum - 1;
-      ajax();
+      listAjax();
     }
   });
   $(".page_nextBlock").click(function () {
     if (!$(this).hasClass("no")) {
       pageObj.currentPageNum = pageObj.blockLastPageNum + 1;
-      ajax();
+      listAjax();
     }
   });
   $(".page_btn").on("click", ".page_list", function () {
     if (pageObj.currentPageNum != JSON.parse($(this).html())) {
       pageObj.currentPageNum = JSON.parse($(this).html());
-      ajax();
+      listAjax();
     }
   });
 }
