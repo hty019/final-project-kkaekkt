@@ -195,8 +195,8 @@ function today() {
     return year+'.'+month+'.'+date;
 }
 function printlist(list) {
-    var price;
-    var totalPrice=0;
+    let price;
+    let totalPrice=0;
     $('.rsvList').children().remove();
     $.each(list, function(key,value) {
         $('.rsvList').append(
@@ -252,7 +252,7 @@ function printlist(list) {
             '</div>')+
         '</div>'
     });
-    for(var i=0;i<list.length;i++) {//각 주문 별 상세 물품 목록 붙이기
+    for(let i=0;i<list.length;i++) {//각 주문 별 상세 물품 목록 붙이기
         totalPrice=0;//초기화
         $.each(list[i].laundryList,function(idx,value) {
             price=value.count*value.price;
