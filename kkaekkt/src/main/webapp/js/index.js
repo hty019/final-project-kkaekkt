@@ -1,6 +1,7 @@
 //전역변수 선언-모든 홈페이지에서 사용 할 수 있게 index에 저장
 var socket = null;
 const chatRog={};
+const roomObj={};
 window.addEventListener("load",function () {
   connectWs();
   fadeIn();
@@ -63,13 +64,23 @@ function connectWs() {
             initLastChat(roomnum,content);
             rlDotCountUp(roomnum);
           }else{//헤드 채팅방 리스트에 해당 채팅방이 없다면
-            const room={//헤드의 채팅방을 만들기 위한 객체
+            // const room={//헤드의 채팅방을 만들기 위한 객체
+            //   addressee:sendermno,
+            //   roomnum:roomnum,
+            //   guest:senderName,
+            //   content:content,
+            //   counts:1
+            // };
+            /**
+             * 오브젝트 setPrototypeOf 메서드를 활용한 JS 객체생성 실습
+             */
+            const room=Object.setPrototypeOf(roomObj,{
               addressee:sendermno,
               roomnum:roomnum,
               guest:senderName,
               content:content,
               counts:1
-            };
+            });
             printRoomLi(room);//헤더에 상대방과의 채팅방을 생성한다.
           }
         }
