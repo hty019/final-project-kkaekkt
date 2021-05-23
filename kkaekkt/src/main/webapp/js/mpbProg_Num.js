@@ -176,8 +176,9 @@ function enter() {
     ajax();
   }
 }
-function initSide() {
-  $(".side_sub")[0].innerHTML =
+function initSide() { //이제 취업하니까 의미없는 커밋은 여기까지만 봐주세요..내일부턴 유의미한 커밋으로 찾아뵙겠습니다.
+  const side_sub = document.querySelector(".side_sub");
+  side_sub.innerHTML =
     '<button onclick="location.href=' +
     "'/jsp/mypageBiz/mpbProg_Num.jsp'" +
     '">주문번호별</button>' +
