@@ -124,12 +124,19 @@
 		INSERT INTO liked (bno,mno) VALUES(#{bno},#{mno});
 	</insert>
 	<insert id="insertBs" parameterType="business">
-		INSERT INTO account (id,password,mtype) VALUES (#{id},#{password},#{bizType}+1);
-		INSERT
-		INTO business (mno,bname,address,phone,bno,bkno,acno,email,typeNum)
-		VALUES
-		((SELECT MAX(mno) FROM
-		account),#{bname},#{address},#{phone},#{bno},#{bankNum},#{bankAccountNum},#{email},#{bizType});
+		INSERT INTO account (id,password,mtype)
+		VALUES (#{id},#{password},#{bizType}+1); <!-- mtype은 세탁소회원이 2번, 코인회원이 3번이라 +1을 적용함 -->
+		INSERT INTO business (mno,bname,address,phone,bno,bkno,acno,email,typeNum)
+		VALUES ((SELECT MAX(mno)  
+		           FROM account),
+		       #{bname},
+		       #{address},
+		       #{phone},
+		       #{bno},
+		       #{bankNum},
+		       #{bankAccountNum},
+		       #{email},
+		       #{bizType}); <!-- 1=세탁소회원, 2=코인회원 -->
 
 		<foreach collection="scheduleList" item="schedule"> 
 			INSERT INTO bsn_schedule VALUES ((SELECT bno FROM

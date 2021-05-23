@@ -108,7 +108,7 @@
 	<script src="https://kit.fontawesome.com/2fc57dd2db.js"
 		crossorigin="anonymous"></script>
 	<script>
-		var pageObj={//세션에서 정보를 받아오는건 독립된 js파일에서 불가능, jsp 내에서만 가능하기 때문에 여기서 값을 받아준다.
+		var pageObj={//세션에 의존적인 설계는 MVC 설계가 아니지만, 방법을 찾지 못했다..
                 bno:${sessionScope.user.bno},
 				currentPageNum:1,//현재 페이지 1
 				listType:3,//처리중-주문번호별

@@ -27,33 +27,23 @@ public class UserDAO {
 		mybatis.insert("UserDAO.likeOn",vo);
 	}
 	public void insertUser(PersonVO vo) {
-		System.out.println("마이바티스 insert");
 		mybatis.insert("UserDAO.insertPs", vo);
-		System.out.println("마이바티스 insert완료");
 	}
-
 	public void insertUser(BusinessVO vo) {
-		System.out.println("DAO진입");
 		mybatis.insert("UserDAO.insertBs", vo);
 	}
-
 	public void updateUser(PersonVO vo) {
-		System.out.println("마이바티스 update");
 		mybatis.update("UserDAO.updatePs", vo);
-		System.out.println("마이바티스 update완료");
 	}
-
 	public void updateUser(BusinessVO vo) {
 		mybatis.update("UserDAO.updateBs", vo);
 	}
 
 	public int deleteUser(AccountVO vo) {
-		System.out.println("mybatis로 기능처리 - 회원탈퇴");
 		return mybatis.delete("UserDAO.deleteUser", vo);
 	}
 	
 	public int orderChk(AccountVO vo) {
-		System.out.println("mybatis로 기능처리 - 예약 찾기");
 		return mybatis.selectOne("UserDAO.orderChk", vo);
 	}
 
@@ -66,22 +56,17 @@ public class UserDAO {
 	}
 	// 아이디 중복확인
 	public int idchkBs(BusinessVO vo) {
-		System.out.println(vo);
 		int res = mybatis.selectOne("UserDAO.idchk", vo);
-		System.out.println("dao와서 마이바티스 카운트값 가져옴");
-		System.out.println(res);
 		return res;
 	}
 		// 소셜 로그인
 		public AccountVO getUserSNS(AccountVO vo) {
-			System.out.println("mybatis로 기능처리 소셜유저");
 			return mybatis.selectOne("UserDAO.getPersonSNS", vo);
 		}
 		
 		
 		// 이메일 확인
 		public int emailchk(String email) {
-			System.out.println("mybatis로 기능처리 <<메일 찾기>>");
 			return mybatis.selectOne("UserDAO.getEmail", email);
 		}
 
@@ -105,17 +90,12 @@ public class UserDAO {
 		return mybatis.selectList("UserDAO.getScheduleList", bno);
 	}
 	public void updateSpec(BusinessVO vo) {
-		System.out.println("마이바티스 update");
 		mybatis.update("UserDAO.updateSpec", vo);
-		System.out.println("마이바티스 update완료");
 
 	}
 	// 아이디 중복확인
 	public int idchk(PersonVO vo) {
-		System.out.println(vo);
 		int res = mybatis.selectOne("UserDAO.idchk", vo);
-		System.out.println("dao와서 마이바티스 카운트값 가져옴");
-		System.out.println(res);
 		return res;
 	}
 	// 아이디 찾기
@@ -124,9 +104,7 @@ public class UserDAO {
 	}
 	// 비밀번호 찾기
 	public AccountVO findPw(AccountVO vo) {
-		System.out.println(vo);
 		AccountVO res = mybatis.selectOne("UserDAO.findPw",vo);
-		System.out.println(res);
 		return res;
 	}
 	public AccountVO joinCfm(AccountVO vo) {
@@ -142,9 +120,7 @@ public class UserDAO {
 		return  mybatis.selectOne("UserDAO.avgGradeBs", vo);
 	}
 	public void updatePw(AccountVO vo) {
-		System.out.println("pw update");
 		mybatis.update("UserDAO.updatePw", vo);
-		System.out.println("pw 변경완료");
 	}
 
 	public AccountVO getUser(AccountVO vo) {

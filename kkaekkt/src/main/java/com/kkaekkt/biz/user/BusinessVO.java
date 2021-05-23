@@ -12,17 +12,17 @@ public class BusinessVO extends AccountVO{
 	private String bname;
 	private String comment;
 	private int bizType; //1. 일반 세탁소, 2. 코인 세탁소
-	private int bankNum;
-	private String bankAccountNum;
-	private List<ScheduleVO> scheduleList;
-	private List<EquipmentVO> equipmentList;
-	private List<LaundryVO> laundryList;
-	private List<EtcVO> etcList;
+	private int bankNum; //은행번호
+	private String bankAccountNum; //계좌번호
+	private List<ScheduleVO> scheduleList; // 형변환을 거쳐서 저장되는 필드
+	private List<EquipmentVO> equipmentList; // 형변환을 거쳐서 저장되는 필드
+	private List<LaundryVO> laundryList; // 형변환을 거쳐서 저장되는 필드
+	private List<EtcVO> etcList; // 형변환을 거쳐서 저장되는 필드
 	private List<CommVO> commList;
-	private String equipment;
-	private String laundry;
-	private String schedule;
-	private String etc; //부가서비스
+	private String equipment; //JSON으로 전송되는 설비 정보
+	private String laundry; //JSON으로 전송되는 취급 품목
+	private String schedule; //JSON으로 전송되는 일정
+	private String etc; //JOSN으로 전송되는 부가서비스
 	private double eval; //평가
 	private int count; //댓글 개수
 	private int likedNum; // 찜당한 수
